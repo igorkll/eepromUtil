@@ -147,4 +147,4 @@ elseif args[1] == "dump" then
     dump()
 else
     io.stderr:write("unknown mode.")
-end 
+end
