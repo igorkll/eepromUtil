@@ -82,7 +82,7 @@ local function dump()
 
         print(">> dumping eeprom main code")
         dump.main = eeprom.get()
-        print(">> dumping eeprom data")
+        print(">> dumping eeprom-data")
         dump.data = eeprom.getData()
         print(">> dumping readonly state")
         dump.readonly = isReadonly(eeprom.address)
@@ -91,22 +91,30 @@ local function dump()
         local file = io.open(getFilePathToWrite(2), "wb")
         file:write(assert(serialization.serialize(dump)))
         file:close()
-        print(">> completed.")
+        print("completed.")
     end
 end
 
 local function flash()
     local eeprom = findEeprom()
     if not isReadonly(eeprom.address) then
-        if yesno("flash eeprom?") then
-            print(">> reading file")
-            local file = io.open(getFilePathToRead(2), "wb")
-            local eepromfile = serialization.unserialize(file:read("a*"))
-            file:close()
+        print(">> reading file")
+        local file = io.open(getFilePathToRead(2), "wb")
+        local eepromfile = assert(serialization.unserialize(file:read("a*")))
+        file:close()
+        if yesno("flash eeprom?" .. (eepromfile.readonly and " IT WILL IRREVERSIBLY BECOME READONLY" or "")) then
+            print(">> flashing main code")
+            eeprom.set(eepromfile.main)
 
+            print(">> flashing data")
+            eeprom.setData(eepromfile.data)
             
+            if eepromfile.readonly then
+                print(">> making readonly")
+                eeprom.makeReadonly(eeprom.getChecksum())
+            end
 
-            print(">> completed.")
+            print("completed.")
         end
     else
         io.stderr:write("aborted: eeprom is readonly")
