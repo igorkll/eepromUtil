@@ -67,8 +67,8 @@ local function findEeprom()
         return component.eeprom
     end
     if not options.q then
-        io.stderr:write("eeprom is not found\n")
-        io.stderr:write("exit.\n")
+        io.stderr:write(">> eeprom is not found\n")
+        io.stderr:write(">> exit.\n")
     end
     os.exit()
 end
@@ -87,11 +87,29 @@ local function dump()
         print(">> dumping readonly state")
         dump.readonly = isReadonly(eeprom.address)
 
-        print("saving file")
+        print(">> saving file")
         local file = io.open(getFilePathToWrite(2), "wb")
         file:write(assert(serialization.serialize(dump)))
         file:close()
-        print("completed.")
+        print(">> completed.")
+    end
+end
+
+local function flash()
+    local eeprom = findEeprom()
+    if not isReadonly(eeprom.address) then
+        if yesno("flash eeprom?") then
+            print(">> reading file")
+            local file = io.open(getFilePathToRead(2), "wb")
+            local eepromfile = serialization.unserialize(file:read("a*"))
+            file:close()
+
+            
+
+            print(">> completed.")
+        end
+    else
+        io.stderr:write("aborted: eeprom is readonly")
     end
 end
 
