@@ -123,3 +123,10 @@ end
 
 ------------------------------------
 
+if args[1] == "flash" then
+    flash()
+elseif args[1] == "a" then
+    dump()
+else
+    io.stderr:write("unknown mode.")
+end
