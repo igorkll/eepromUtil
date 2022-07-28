@@ -59,7 +59,7 @@ end
 
 local function isReadonly(address)
     if not options.q then print(">> checking readonly: " .. address) end
-    local ro = not component.invoke(address, "set", component.invoke(address, "get"))
+    local ro = not not select(2, component.invoke(address, "set", component.invoke(address, "get")))
     if ro then
         if not options.q then print(">> eeprom chip " .. address .. " is readonly") end
     end
@@ -122,7 +122,7 @@ local function flash()
             eeprom.setData(eepromfile.data or "")
 
             print(">> setting label")
-            eeprom.setData(eepromfile.label or "eeprom")
+            eeprom.setLabel(eepromfile.label or "eeprom")
             
             if eepromfile.readonly then
                 print(">> making readonly")
