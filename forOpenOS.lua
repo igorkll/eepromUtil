@@ -94,6 +94,8 @@ local function dump()
         dump.data = eeprom.getData()
         print(">> dumping readonly state")
         dump.readonly = isReadonly(eeprom.address)
+        print(">> dumping label")
+        dump.label = eeprom.getLabel()
 
         print(">> saving file " .. filepath)
         local file = assert(io.open(filepath, "wb"))
@@ -114,10 +116,13 @@ local function flash()
         file:close()
         if yesno("flash eeprom?" .. (eepromfile.readonly and " IT WILL IRREVERSIBLY BECOME READONLY" or "")) then
             print(">> flashing main code")
-            eeprom.set(eepromfile.main)
+            eeprom.set(eepromfile.main or "")
 
             print(">> flashing data")
-            eeprom.setData(eepromfile.data)
+            eeprom.setData(eepromfile.data or "")
+
+            print(">> setting label")
+            eeprom.setData(eepromfile.label or "eeprom")
             
             if eepromfile.readonly then
                 print(">> making readonly")
