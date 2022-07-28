@@ -15,14 +15,17 @@ if #args == 0 then
     return
 end
 
-local path = shell.resolve(args[1])
-if not path or not fs.exists(path) then
-    io.stderr:write("file not found\n")
-elseif fs.isDirectory(path) then
-    io.stderr:write("is directory\n")
-end
-
 ------------------------------------
+
+local function getFilePath(argNumber)
+    local path = shell.resolve(args[argNumber])
+    if not path or not fs.exists(path) then
+        io.stderr:write("file not found\n")
+    elseif fs.isDirectory(path) then
+        io.stderr:write("is directory\n")
+    end
+    return path
+end
 
 local function yesno(text)
     if options.y then
@@ -59,7 +62,7 @@ end
 ------------------------------------
 
 local function dump()
-    
+    local eeprom = 
 end
 
 ------------------------------------
