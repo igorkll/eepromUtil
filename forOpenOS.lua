@@ -76,6 +76,8 @@ end
 ------------------------------------
 
 local function dump()
+    local filepath = getFilePathToWrite(2)
+
     local eeprom = findEeprom()
     if yesno("create dump?") then
         local dump = {}
@@ -88,7 +90,7 @@ local function dump()
         dump.readonly = isReadonly(eeprom.address)
 
         print(">> saving file")
-        local file = io.open(getFilePathToWrite(2), "wb")
+        local file = io.open(filepath, "wb")
         file:write(assert(serialization.serialize(dump)))
         file:close()
         print("completed.")
@@ -96,10 +98,12 @@ local function dump()
 end
 
 local function flash()
+    local filepath = getFilePathToRead(2)
+
     local eeprom = findEeprom()
     if not isReadonly(eeprom.address) then
         print(">> reading file")
-        local file = io.open(getFilePathToRead(2), "wb")
+        local file = io.open(filepath, "wb")
         local eepromfile = assert(serialization.unserialize(file:read("a*")))
         file:close()
         if yesno("flash eeprom?" .. (eepromfile.readonly and " IT WILL IRREVERSIBLY BECOME READONLY" or "")) then
