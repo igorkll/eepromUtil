@@ -21,10 +21,10 @@ local function getFilePathToRead(argNumber)
     local path = shell.resolve(args[argNumber])
     if not path or not fs.exists(path) then
         io.stderr:write("file not found\n")
-        return nil
+        os.exit()
     elseif fs.isDirectory(path) then
         io.stderr:write("is directory\n")
-        return nil
+        os.exit()
     end
     return path
 end
@@ -33,10 +33,10 @@ local function getFilePathToWrite(argNumber)
     local path = shell.resolve(args[argNumber])
     if fs.isDirectory(path) then
         io.stderr:write("directory exists\n")
-        return nil
+        os.exit()
     elseif fs.exists(path) and not options.f then
         io.stderr:write("file already exists\n")
-        return nil
+        os.exit()
     end
     return path
 end
@@ -77,7 +77,22 @@ end
 
 local function dump()
     local eeprom = findEeprom()
-    
+    if yesno("create dump?") then
+        local dump = {}
+
+        print(">> dumping eeprom main code")
+        dump.main = eeprom.get()
+        print(">> dumping eeprom data")
+        dump.data = eeprom.getData()
+        print(">> dumping readonly state")
+        dump.readonly = isReadonly(eeprom.address)
+
+        print("saving file")
+        local file = io.open(getFilePathToWrite(2), "wb")
+        file:write(assert(serialization.serialize(dump)))
+        file:close()
+        print("completed.")
+    end
 end
 
 ------------------------------------
