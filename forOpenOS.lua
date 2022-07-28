@@ -119,10 +119,10 @@ local function flash()
         file:close()
         if yesno("flash eeprom?" .. (eepromfile.readonly and " IT WILL IRREVERSIBLY BECOME READONLY" or "")) then
             print(">> flashing main code")
-            eeprom.set(eepromfile.main or "")
+            local _, flashErr = eeprom.set(eepromfile.main or "")
 
             print(">> flashing data")
-            eeprom.setData(eepromfile.data or "")
+            local _, flashDataErr = eeprom.setData(eepromfile.data or "")
 
             print(">> setting label")
             eeprom.setLabel(eepromfile.label or "eeprom")
@@ -132,7 +132,16 @@ local function flash()
                 eeprom.makeReadonly(eeprom.getChecksum())
             end
 
-            print("completed.")
+            if not flashErr and not flashDataErr then
+                print("completed.")
+            else
+                if flashErr then
+                    print("flash code error: " .. tostring(flashErr))
+                end
+                if flashDataErr then
+                    print("flash data error: " .. tostring(flashDataErr))
+                end
+            end
         end
     else
         io.stderr:write("aborted: eeprom is readonly")
