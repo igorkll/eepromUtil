@@ -6,8 +6,9 @@ local component = require("component")
 local args, options = shell.parse(...)
 
 if #args == 0 then
-    print("eeprom flash <.eeprom file>; flash .eeprom file to eeprom chip")
-    print("eeprom dump")
+    print("Usage:")
+    print(" - 'eeprom flash <path>' flash .eeprom file to eeprom chip")
+    print("- 'eeprom dump <savepath>' dump eeprom to ")
     return
 end
 
@@ -19,6 +20,12 @@ elseif fs.isDirectory(path) then
 end
 
 ------------------------------------
+
+local function yesno(text)
+    io.write(text .. "? [Y/n] ")
+    local data = io.read()
+    return data and data:lower() == "y"
+end
 
 local function findEeprom()
     print("finding eeprom")
@@ -32,3 +39,10 @@ local function findEeprom()
 end
 
 ------------------------------------
+
+local function dump()
+    
+end
+
+------------------------------------
+
