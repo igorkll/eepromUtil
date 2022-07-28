@@ -17,12 +17,24 @@ end
 
 ------------------------------------
 
-local function getFilePath(argNumber)
+local function getFilePathToRead(argNumber)
     local path = shell.resolve(args[argNumber])
     if not path or not fs.exists(path) then
         io.stderr:write("file not found\n")
+        return nil
     elseif fs.isDirectory(path) then
         io.stderr:write("is directory\n")
+        return nil
+    end
+    return path
+end
+
+local function getFilePathToWrite(argNumber)
+    local path = shell.resolve(args[argNumber])
+    if fs.isDirectory(path) then
+        io.stderr:write("directory exists\n")
+        return nil
+    elseif fs.exists(path) and not options.f then
     end
     return path
 end
@@ -62,7 +74,8 @@ end
 ------------------------------------
 
 local function dump()
-    local eeprom = 
+    local eeprom = findEeprom()
+    
 end
 
 ------------------------------------
