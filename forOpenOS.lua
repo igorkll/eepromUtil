@@ -59,7 +59,7 @@ end
 
 local function isReadonly(address)
     if not options.q then print(">> checking readonly: " .. address) end
-    local ro = not pcall(component.invoke, address, "set", component.invoke(address, "get"))
+    local ro = not component.invoke(address, "set", component.invoke(address, "get"))
     if ro then
         if not options.q then print(">> eeprom chip " .. address .. " is readonly") end
     end
@@ -95,7 +95,7 @@ local function dump()
         print(">> dumping readonly state")
         dump.readonly = isReadonly(eeprom.address)
 
-        print(">> saving file")
+        print(">> saving file " .. filepath)
         local file = assert(io.open(filepath, "wb"))
         file:write(assert(serialization.serialize(dump)))
         file:close()
@@ -108,9 +108,9 @@ local function flash()
 
     local eeprom = findEeprom()
     if not isReadonly(eeprom.address) then
-        print(">> reading file")
-        local file = assert(io.open(filepath, "wb"))
-        local eepromfile = assert(serialization.unserialize(file:read("a*")))
+        print(">> reading file " .. filepath)
+        local file = assert(io.open(filepath, "rb"))
+        local eepromfile = assert(serialization.unserialize(file:read("*a")))
         file:close()
         if yesno("flash eeprom?" .. (eepromfile.readonly and " IT WILL IRREVERSIBLY BECOME READONLY" or "")) then
             print(">> flashing main code")
