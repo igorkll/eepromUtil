@@ -35,6 +35,8 @@ local function getFilePathToWrite(argNumber)
         io.stderr:write("directory exists\n")
         return nil
     elseif fs.exists(path) and not options.f then
+        io.stderr:write("file already exists\n")
+        return nil
     end
     return path
 end
