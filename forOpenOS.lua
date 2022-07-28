@@ -18,7 +18,10 @@ end
 ------------------------------------
 
 local function getFilePathToRead(argNumber)
-    local path = shell.resolve(args[argNumber])
+    local path = shell.resolve(args[argNumber] or (function()
+        io.stderr:write("check args!\n")
+        os.exit()
+    end)())
     if not path or not fs.exists(path) then
         io.stderr:write("file not found\n")
         os.exit()
@@ -30,7 +33,10 @@ local function getFilePathToRead(argNumber)
 end
 
 local function getFilePathToWrite(argNumber)
-    local path = shell.resolve(args[argNumber])
+    local path = shell.resolve(args[argNumber] or (function()
+        io.stderr:write("check args!\n")
+        os.exit()
+    end)())
     if fs.isDirectory(path) then
         io.stderr:write("directory exists\n")
         os.exit()
@@ -90,7 +96,7 @@ local function dump()
         dump.readonly = isReadonly(eeprom.address)
 
         print(">> saving file")
-        local file = io.open(filepath, "wb")
+        local file = assert(io.open(filepath, "wb"))
         file:write(assert(serialization.serialize(dump)))
         file:close()
         print("completed.")
@@ -103,7 +109,7 @@ local function flash()
     local eeprom = findEeprom()
     if not isReadonly(eeprom.address) then
         print(">> reading file")
-        local file = io.open(filepath, "wb")
+        local file = assert(io.open(filepath, "wb"))
         local eepromfile = assert(serialization.unserialize(file:read("a*")))
         file:close()
         if yesno("flash eeprom?" .. (eepromfile.readonly and " IT WILL IRREVERSIBLY BECOME READONLY" or "")) then
@@ -129,7 +135,7 @@ end
 
 if args[1] == "flash" then
     flash()
-elseif args[1] == "a" then
+elseif args[1] == "dump" then
     dump()
 else
     io.stderr:write("unknown mode.")
