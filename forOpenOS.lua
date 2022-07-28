@@ -25,19 +25,34 @@ end
 ------------------------------------
 
 local function yesno(text)
-    io.write(text .. "? [Y/n] ")
-    local data = io.read()
-    return data and data:lower() == "y"
+    if options.y then
+        if not options.q then print(text .. " [Y/n] y") end
+    else
+        if not options.q then io.write(text .. " [Y/n] ") end
+        local data = io.read()
+        return data and data:lower() == "y"
+    end
+end
+
+local function isReadonly(address)
+    if not options.q then print(">> checking readonly: " .. address) end
+    local ro = not pcall(component.invoke, address, "set", component.invoke(address, "get"))
+    if ro then
+        if not options.q then print(">> eeprom chip " .. address .. " is readonly") end
+    end
+    return ro
 end
 
 local function findEeprom()
-    print("finding eeprom")
+    if not options.q then print(">> finding eeprom") end
     if component.isAvailable("eeprom") then
-        print("finded eeprom " .. component.eeprom.address)
+        if not options.q then print(">> finded eeprom " .. component.eeprom.address) end
         return component.eeprom
     end
-    print("eeprom is not found")
-    print("exit.")
+    if not options.q then
+        io.stderr:write("eeprom is not found\n")
+        io.stderr:write("exit.\n")
+    end
     os.exit()
 end
 
