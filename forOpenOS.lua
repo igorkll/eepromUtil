@@ -15,6 +15,11 @@ if #args == 0 then
     return
 end
 
+local print = print
+if options.q then
+    print = function() end
+end
+
 ------------------------------------
 
 local function getFilePathToRead(argNumber)
@@ -49,7 +54,7 @@ end
 
 local function yesno(text)
     if options.y then
-        if not options.q then print(text .. " [Y/n] y") end
+        print(text .. " [Y/n] y")
     else
         if not options.q then io.write(text .. " [Y/n] ") end
         local data = io.read()
@@ -58,24 +63,22 @@ local function yesno(text)
 end
 
 local function isReadonly(address)
-    if not options.q then print(">> checking readonly: " .. address) end
+    print(">> checking readonly: " .. address)
     local ro = not not select(2, component.invoke(address, "set", component.invoke(address, "get")))
     if ro then
-        if not options.q then print(">> eeprom chip " .. address .. " is readonly") end
+        print(">> eeprom chip " .. address .. " is readonly")
     end
     return ro
 end
 
 local function findEeprom()
-    if not options.q then print(">> finding eeprom") end
+    print(">> finding eeprom")
     if component.isAvailable("eeprom") then
-        if not options.q then print(">> finded eeprom " .. component.eeprom.address) end
+        print(">> finded eeprom " .. component.eeprom.address)
         return component.eeprom
     end
-    if not options.q then
-        io.stderr:write(">> eeprom is not found\n")
-        io.stderr:write(">> exit.\n")
-    end
+    io.stderr:write(">> eeprom is not found\n")
+    io.stderr:write(">> exit.\n")
     os.exit()
 end
 
