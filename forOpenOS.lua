@@ -7,8 +7,11 @@ local args, options = shell.parse(...)
 
 if #args == 0 then
     print("Usage:")
-    print(" - 'eeprom flash <path>' flash .eeprom file to eeprom chip")
-    print("- 'eeprom dump <savepath>' dump eeprom to ")
+    print(" - 'eeprom flash <filepath>' flash .eeprom file to eeprom chip")
+    print(" - 'eeprom dump <savepath>' dump eeprom to .eeprom file")
+    print(" -f: Force overwriting existing files.")
+    print(" -y: automatically agree to everything.")
+    print(" -q: Quiet mode - no status messages.es.")
     return
 end
 
